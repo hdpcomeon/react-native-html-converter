@@ -5,6 +5,7 @@ var {
   Linking,
   StyleSheet,
   Text,
+  View
 } = ReactNative
 
 
@@ -19,7 +20,7 @@ var HTMLView = React.createClass({
 
   getDefaultProps() {
     return {
-      onLinkPress: url => Linking.openURL(url),
+      onLinkPress: Linking.openURL,
       onError: console.error.bind(console),
     }
   },
@@ -63,7 +64,7 @@ var HTMLView = React.createClass({
 
   render() {
     if (this.state.element) {
-      return <Text children={this.state.element} />
+      return <View children={this.state.element} />
     }
     return <Text />
   },

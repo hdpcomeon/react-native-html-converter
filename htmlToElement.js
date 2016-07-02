@@ -5,11 +5,11 @@ var entities = require('./vendor/entities')
 
 var {
   Text,
+  View
 } = ReactNative
 
-
 var LINE_BREAK = '\n'
-var PARAGRAPH_BREAK = '\n\n'
+var PARAGRAPH_BREAK = '\n'
 var BULLET = '\u2022 '
 
 function htmlToElement(rawHtml, opts, done) {
@@ -18,33 +18,37 @@ function htmlToElement(rawHtml, opts, done) {
 
     return dom.map((node, index, list) => {
       if (opts.customRenderer) {
-        var rendered = opts.customRenderer(node, index, list)
-        if (rendered || rendered === null) return rendered
+        let rendered = opts.customRenderer(node, index, list)
+        if (rendered || rendered === null) return rendered;
       }
 
       if (node.type == 'text') {
+
+        let linkPressHandler = null;
+        if (parent && parent.name == 'a' && parent.attribs && parent.attribs.href) {
+          linkPressHandler = () => opts.linkHandler(entities.decodeHTML(parent.attribs.href))
+        }
+
         return (
-          <Text key={index} style={parent ? opts.styles[parent.name] : null}>
-            {entities.decodeHTML(node.data)}
+          <Text key={index} onPress={linkPressHandler} style={parent ? opts.styles[parent.name] : null}>
+
+              { parent && parent.name == 'pre'? LINE_BREAK : null }
+              { parent && parent.name == "li"? BULLET : null }
+              { parent && parent.name == 'br'? LINE_BREAK : null }
+              { parent && parent.name == 'p' && index < list.length - 1 ? PARAGRAPH_BREAK : null }
+              { parent && parent.name == 'h1' || parent && parent.name == 'h2' || parent && parent.name == 'h3' || parent && parent.name == 'h4' || parent && parent.name == 'h5'? PARAGRAPH_BREAK :null }
+            
+
+            { entities.decodeHTML(node.data) }
           </Text>
         )
       }
 
       if (node.type == 'tag') {
-        var linkPressHandler = null
-        if (node.name == 'a' && node.attribs && node.attribs.href) {
-          linkPressHandler = () => opts.linkHandler(entities.decodeHTML(node.attribs.href))
-        }
-
         return (
-          <Text key={index} onPress={linkPressHandler}>
-            {node.name == 'pre' ? LINE_BREAK : null}
-            {node.name == 'li' ? BULLET : null}
-            {domToElement(node.children, node)}
-            {node.name == 'br' || node.name == 'li' ? LINE_BREAK : null}
-            {node.name == 'p' && index < list.length - 1 ? PARAGRAPH_BREAK : null}
-            {node.name == 'h1' || node.name == 'h2' || node.name == 'h3' || node.name == 'h4' || node.name == 'h5' ? LINE_BREAK : null}
-          </Text>
+          <View key={ index }>
+            { domToElement(node.children, node) }
+          </View>
         )
       }
     })
