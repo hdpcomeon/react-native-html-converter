@@ -22,12 +22,14 @@ function htmlToElement(rawHtml, opts, done) {
 
     var getNodeData = function(node){
       let nodeData = null;
-      if(node.children[0].data){
-        nodeData = node.children[0].data;
-      }else{
-        nodeData = getNodeData(node.children[0]);
+      if(node.children.length){
+        let nodeChild = node.children[0];
+        if(nodeChild && nodeChild.data){
+          nodeData = nodeChild.data;
+        }else{
+          nodeData = getNodeData(nodeChild);
+        }
       }
-
       return nodeData;
     };
 
