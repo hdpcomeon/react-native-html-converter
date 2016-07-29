@@ -1,6 +1,6 @@
 {
   "name": "react-native-html-converter",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "render HTML content to react-native views",
   "main": "index.js",
   "scripts": {
